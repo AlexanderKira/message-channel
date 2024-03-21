@@ -32,7 +32,7 @@ class MessageController extends Controller
             });
             $messages = $messageFilter->apply($messages->toQuery(), $request->all())->get();
         } else {
-            $messages = $messageFilter->apply(Message::where('type', MessageTypeEnum::ALL->value), $request->all())->get();
+            $messages = $messageFilter->apply(Message::where('type', MessageTypeEnum::ALL), $request->all())->get();
         }
 
         return MessageResource::collection($messages);
@@ -50,15 +50,14 @@ class MessageController extends Controller
                 if($message->user_id === $user->id){
                     return new MessageResource($message);
                 }
-            }
-            abort(403, 'This action is unauthorized.');
-        }else {
-            if ($message->type === MessageTypeEnum::ALL->value) {
-                return new MessageResource($message);
-            } else {
                 abort(403, 'This action is unauthorized.');
             }
+            return new MessageResource($message);
         }
+        if ($message->type === MessageTypeEnum::ALL) {
+            return new MessageResource($message);
+        }
+        abort(403, 'This action is unauthorized.');
     }
 
     public function store(MessageRequest $request): MessageResource
@@ -70,7 +69,7 @@ class MessageController extends Controller
         $message->type = $data['type'];
         $message->save();
 
-        if($data['type'] === MessageTypeEnum::PRIVATE->value){
+        if($data['type'] === MessageTypeEnum::PRIVATE){
             $privateMessageRecipient = new PrivateMessageRecipient();
             $privateMessageRecipient->user_id = $data['recipient_id'];
             $privateMessageRecipient->message_id = $message->id;
