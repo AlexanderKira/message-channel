@@ -20,12 +20,11 @@ class ReplyController extends Controller
         $reply->content = $data['content'];
         $reply->message_id = $data['message_id'];
 
-        $message = Message::find($data['message_id']);
+        $message = Message::findOrFail($data['message_id']);
 
         if($message->type === MessageTypeEnum::PRIVATE){
             $user = Auth::user();
-            $recipient_id = $message->privateMessageRecipients()->first()->user_id;
-            if($recipient_id === $user->id){
+            if($message->sender_id === $user->id){
                 $reply->save();
                 return new ReplyResource($reply);
             }

@@ -13,8 +13,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasApiTokens;
 
-    protected static array $relationships = ['privateMessageRecipients', 'message'];
-
     /**
      * The attributes that are mass assignable.
      *
@@ -49,13 +47,13 @@ class User extends Authenticatable
         ];
     }
 
-    public function messages(): HasMany
+    public function sentMessages(): HasMany
     {
-        return $this->hasMany(Message::class);
+        return $this->hasMany(Message::class, 'sender_id');
     }
 
-    public function privateMessageRecipients(): HasMany
+    public function receivedMessages(): HasMany
     {
-        return $this->hasMany(PrivateMessageRecipient::class);
+        return $this->hasMany(Message::class, 'recipient_id');
     }
 }

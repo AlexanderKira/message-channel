@@ -8,10 +8,10 @@ use App\Http\Requests\Message\IndexMessageRequest;
 use App\Http\Requests\Message\MessageRequest;
 use App\Http\Resources\Message\MessageResource;
 use App\Models\Message;
-use App\Models\PrivateMessageRecipient;
 use App\Models\Reply;
 use App\Models\User;
 use App\Services\Filters\Message\FilterManager;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +28,7 @@ class MessageController extends Controller
             $user = Auth::user();
             $messages = Message::query()->get();
             $messages = $messages->filter(function ($message) use ($user) {
-                return $message->type !== MessageTypeEnum::PRIVATE || $message->user_id === $user->id || $message->privateMessageRecipients->first()->user_id === $user->id;
+                return $message->type !== MessageTypeEnum::PRIVATE || $message->user_id === $user->id || $message->recipient_id === $user->id;
             });
             $messages = $messageFilter->apply($messages->toQuery(), $request->all())->get();
         } else {
@@ -43,11 +43,10 @@ class MessageController extends Controller
         if (Auth::check()) {
             if($message->type === MessageTypeEnum::PRIVATE){
                 $user = Auth::user();
-                $recipient_id = $message->privateMessageRecipients()->first()->user_id;
-                if($recipient_id === $user->id){
+                if($message->recipient_id === $user->id){
                     return new MessageResource($message);
                 }
-                if($message->user_id === $user->id){
+                if($message->sender_id === $user->id){
                     return new MessageResource($message);
                 }
                 abort(403, 'This action is unauthorized.');
@@ -67,14 +66,12 @@ class MessageController extends Controller
         $message = new Message();
         $message->content = $data['content'];
         $message->type = $data['type'];
-        $message->save();
 
-        if($data['type'] === MessageTypeEnum::PRIVATE){
-            $privateMessageRecipient = new PrivateMessageRecipient();
-            $privateMessageRecipient->user_id = $data['recipient_id'];
-            $privateMessageRecipient->message_id = $message->id;
-            $privateMessageRecipient->save();
+        if($data['type'] === MessageTypeEnum::PRIVATE->value){
+            $message->recipient_id = $data['recipient_id'];
         }
+
+        $message->save();
 
         return new MessageResource($message);
     }
@@ -92,12 +89,14 @@ class MessageController extends Controller
         return new MessageResource($message);
     }
 
-    public function destroy(Message $message): void
+    public function destroy(Message $message): JsonResponse
     {
         Gate::allowIf(fn (User $user) => $message->isOwnedBy($user));
 
         $message->delete();
         Reply::where('message_id', $message->id)->delete();
+
+        return response()->json(['message' => 'Message deleted successfully'], 200);
     }
 
 

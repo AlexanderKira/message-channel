@@ -17,10 +17,8 @@ class MessageResource extends JsonResource
             'id' => $this->id,
             'content' => $this->content,
             'type' => $this->type,
-            'user_id' => $this->user_id,
-            'recipient' => $this->privateMessageRecipients->map(function ($recipient) {
-                return $recipient->user;
-            }),
+            'sender' => $this->sender,
+            'recipient' => $this->recipient,
             'replies' => $this->replies,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

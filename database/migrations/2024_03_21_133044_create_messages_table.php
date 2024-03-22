@@ -15,8 +15,12 @@ return new class extends Migration
             $table->id();
             $table->text('content');
             $table->string('type');
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->unsignedBigInteger('sender_id');
+            $table->unsignedBigInteger('recipient_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('sender_id')->references('id')->on('users');
+            $table->foreign('recipient_id')->references('id')->on('users');
         });
     }
 

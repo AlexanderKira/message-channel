@@ -91,35 +91,39 @@
 образец ответа
 
     {
-        "data": [
+        "data": {
+            "id": 16,
+            "content": "привет всем",
+            "type": "private",
+            "sender": {
                 "id": 1,
-                "content": "привет тебе",
-                "type": "private",
-                "user_id": 1,
-                "recipient": [
-                    {
-                        "id": 2,
-                        "name": "user1",
-                        "email": "user1@user1.com",
-                        "email_verified_at": null,
-                        "created_at": "2024-03-18T02:57:51.000000Z",
-                        "updated_at": "2024-03-18T02:57:51.000000Z"
-                    }
-                ],
-                "replies": [
-                    {
-                        "id": 1,
-                        "content": "И тебе привет!",
-                        "user_id": 2,
-                        "message_id": 1,
-                        "created_at": "2024-03-19T03:39:39.000000Z",
-                        "updated_at": "2024-03-19T03:39:39.000000Z"
-                    },
-                ],
-                "created_at": "2024-03-19T03:39:32.000000Z",
-                "updated_at": "2024-03-19T03:39:32.000000Z"
+                "name": "admin",
+                "email": "admin@admin.com",
+                "email_verified_at": null,
+                "created_at": "2024-03-16T11:44:55.000000Z",
+                "updated_at": "2024-03-16T11:44:55.000000Z"
             },
-	    ]
+            "recipient": {
+                "id": 2,
+                "name": "user1",
+                "email": "user1@user1.com",
+                "email_verified_at": null,
+                "created_at": "2024-03-18T02:57:51.000000Z",
+                "updated_at": "2024-03-18T02:57:51.000000Z"
+            },
+            "replies": [
+                {
+                    "id": 6,
+                    "content": "ну и тебе привет что-ли",
+                    "user_id": 1,
+                    "message_id": 16,
+                    "created_at": "2024-03-22T02:03:29.000000Z",
+                    "updated_at": "2024-03-22T02:03:29.000000Z"
+                }
+            ],
+            "created_at": "2024-03-22T02:03:11.000000Z",
+            "updated_at": "2024-03-22T02:03:11.000000Z"
+        }
     }
 
 получить сообщение по id GET

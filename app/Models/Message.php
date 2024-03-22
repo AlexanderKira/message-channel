@@ -11,26 +11,25 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Message extends Model
 {
     use HasFactory;
-
-    protected static array $relationships = ['user', 'privateMessageRecipients', 'replies'];
     protected $fillable = [
         'type',
         'content',
-        'user_id',
+        'sender_id',
+        'recipient_id'
     ];
 
     protected $casts = [
         'type' => MessageTypeEnum::class,
     ];
 
-    public function user(): BelongsTo
+    public function recipient(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'recipient_id');
     }
 
-    public function privateMessageRecipients(): HasMany
+    public function sender(): BelongsTo
     {
-        return $this->hasMany(PrivateMessageRecipient::class);
+        return $this->belongsTo(User::class, 'sender_id');
     }
 
     public function replies(): HasMany
@@ -40,13 +39,13 @@ class Message extends Model
     protected static function booted(): void
     {
         static::saving(function (Message $message){
-            $message->user_id = $message->user_id ?: auth()->id();
+            $message->sender_id = $message->sender_id ?: auth()->id();
         });
     }
 
     public function isOwnedBy(User $user): bool
     {
-        return $this->user_id === $user->id;
+        return $this->sender_id === $user->id;
     }
 
 }

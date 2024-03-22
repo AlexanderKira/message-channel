@@ -10,8 +10,6 @@ class Reply extends Model
 {
     use HasFactory;
 
-    protected static array $relationships = ['user', 'message'];
-
     protected $fillable = [
         'content',
         'user_id',
