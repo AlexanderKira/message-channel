@@ -28,7 +28,7 @@ class MessageController extends Controller
             $user = Auth::user();
             $messages = Message::query()->get();
             $messages = $messages->filter(function ($message) use ($user) {
-                return $message->type !== MessageTypeEnum::PRIVATE || $message->user_id === $user->id || $message->recipient_id === $user->id;
+                return $message->type !== MessageTypeEnum::PRIVATE || $message->sender_id === $user->id || $message->recipient_id === $user->id;
             });
             $messages = $messageFilter->apply($messages->toQuery(), $request->all())->get();
         } else {
