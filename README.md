@@ -52,29 +52,36 @@
 
     http://localhost/api/messages/store
 
-    content => 'текст сообщения'
-    type => 'all'
+    {
+        "content": "привет всем",
+        "type": "all",
+    }
 
 отправить сообщение private 
 
     http://localhost/api/messages/store
 
-    content => 'привет тебе'
-    type => 'private'
-    recipient_id => '2'
+    {
+        "content": "привет тебе",
+        "type": "private",
+        "recipient_id": 2
+    }
 
 ответ на сообщение 
 
-    http://localhost/api/messages/reply
+    http://localhost/api/messages/reply/1
 
-    content => 'текст ответа на сообщение 1'
-    message_id => '1'
+    {
+        "content": "текст ответа на сообщение 1",
+    }
 
 обновить сообщение по id POST
 
     http://localhost/api/messages/update/1
-    
-    content => 'текст для обновления сообщения 1'
+
+    {
+        "content": "текст для обновления сообщения 1",
+    }
 
 получить все сообщения GET,
 ответы и private сообщения которые отправлены вашему пользователю будут видны в списке
