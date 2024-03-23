@@ -14,7 +14,7 @@ Route::prefix('/messages')->group(function (){
     Route::get('/show/{message}', [MessageController::class, 'show']);
     Route::middleware('auth:sanctum')->group(function (){
         Route::post('/store', [MessageController::class, 'store']);
-        Route::post('/reply', [ReplyController::class, 'store']);
+        Route::post('/reply/{message}', [ReplyController::class, 'store']);
         Route::post('/update/{message}', [MessageController::class, 'update']);
         Route::post('/delete/{message}', [MessageController::class, 'destroy']);
     });

@@ -26,7 +26,7 @@ class ReplyMessageRequest extends FormRequest
     {
         return [
             'content' => ['required', 'string', 'max:65535'],
-            'message_id' => ['required', 'integer']
+//            'message_id' => ['required', 'integer']
         ];
     }
 }

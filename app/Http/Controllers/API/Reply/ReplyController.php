@@ -14,13 +14,11 @@ use Illuminate\Support\Facades\Auth;
 class ReplyController extends Controller
 {
 
-    public function store(ReplyMessageRequest $request, Reply $reply): ReplyResource
+    public function store(ReplyMessageRequest $request, Reply $reply, Message $message): ReplyResource
     {
         $data = $request->validated();
         $reply->content = $data['content'];
-        $reply->message_id = $data['message_id'];
-
-        $message = Message::findOrFail($data['message_id']);
+        $reply->message_id = $message->id;
 
         if($message->type === MessageTypeEnum::PRIVATE){
             $user = Auth::user();
