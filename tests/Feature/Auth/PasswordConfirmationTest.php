@@ -13,8 +13,13 @@ class PasswordConfirmationTest extends TestCase
     public function test_confirm_password_screen_can_be_rendered(): void
     {
         $user = User::factory()->create();
+        $csrfCookie = $this->get('/sanctum/csrf-cookie');
 
-        $response = $this->actingAs($user)->get('/confirm-password');
+        $headers = [
+            'X-XSRF-TOKEN' => $csrfCookie->getCookie('XSRF-TOKEN', false)->getValue(),
+        ];
+
+        $response = $this->actingAs($user)->get('/confirm-password', [], $headers);
 
         $response->assertStatus(200);
     }
@@ -22,10 +27,15 @@ class PasswordConfirmationTest extends TestCase
     public function test_password_can_be_confirmed(): void
     {
         $user = User::factory()->create();
+        $csrfCookie = $this->get('/sanctum/csrf-cookie');
+
+        $headers = [
+            'X-XSRF-TOKEN' => $csrfCookie->getCookie('XSRF-TOKEN', false)->getValue(),
+        ];
 
         $response = $this->actingAs($user)->post('/confirm-password', [
             'password' => 'password',
-        ]);
+        ], $headers);
 
         $response->assertRedirect();
         $response->assertSessionHasNoErrors();
@@ -34,10 +44,15 @@ class PasswordConfirmationTest extends TestCase
     public function test_password_is_not_confirmed_with_invalid_password(): void
     {
         $user = User::factory()->create();
+        $csrfCookie = $this->get('/sanctum/csrf-cookie');
+
+        $headers = [
+            'X-XSRF-TOKEN' => $csrfCookie->getCookie('XSRF-TOKEN', false)->getValue(),
+        ];
 
         $response = $this->actingAs($user)->post('/confirm-password', [
             'password' => 'wrong-password',
-        ]);
+        ],$headers);
 
         $response->assertSessionHasErrors();
     }

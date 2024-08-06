@@ -3,6 +3,7 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use App\Services\TestHelpers;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
@@ -11,6 +12,17 @@ use Tests\TestCase;
 class PasswordResetTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function getHeadersXsrfToken(array $headers = []): array
+    {
+        $csrfCookie = $this->get('/sanctum/csrf-cookie');
+
+        $tokenValue = $csrfCookie->getCookie('XSRF-TOKEN', false)->getValue();
+
+        $headers['X-XSRF-TOKEN'] = $tokenValue;
+
+        return $headers;
+    }
 
     public function test_reset_password_link_screen_can_be_rendered(): void
     {
@@ -25,7 +37,7 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->post('/forgot-password', ['email' => $user->email], $this->getHeadersXsrfToken());
 
         Notification::assertSentTo($user, ResetPassword::class);
     }
@@ -36,7 +48,7 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->post('/forgot-password', ['email' => $user->email], $this->getHeadersXsrfToken());
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
             $response = $this->get('/reset-password/'.$notification->token);
