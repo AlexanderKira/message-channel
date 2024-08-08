@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Message;
 
 use App\Enums\MessageTypeEnum;
+use App\Http\Builders\Filter\MessageFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Message\IndexMessageRequest;
 use App\Http\Requests\Message\MessageRequest;
@@ -20,22 +21,15 @@ use Illuminate\Support\Facades\Gate;
 
 class MessageController extends Controller
 {
-    public function index(IndexMessageRequest $request): AnonymousResourceCollection
+    public function index(MessageFilter $filter): AnonymousResourceCollection
     {
-        $messageFilter = new FilterManager();
+        $messages = Message::filter($filter);
 
-        if (Auth::check()) {
-            $user = Auth::user();
-            $messages = Message::query()->get();
-            $messages = $messages->filter(function ($message) use ($user) {
-                return $message->type !== MessageTypeEnum::PRIVATE || $message->sender_id === $user->id || $message->recipient_id === $user->id;
-            });
-            $messages = $messageFilter->apply($messages->toQuery(), $request->all())->get();
-        } else {
-            $messages = $messageFilter->apply(Message::where('type', MessageTypeEnum::ALL), $request->all())->get();
+        if (!auth()->check()) {
+            $messages = $messages->forUnauthorizedUser();
         }
 
-        return MessageResource::collection($messages);
+        return MessageResource::collection($messages->get());
     }
 
     public function show(Message $message): MessageResource

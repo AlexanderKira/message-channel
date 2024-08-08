@@ -25,9 +25,11 @@ class IndexMessageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => [new Enum(MessageTypeEnum::class)],
-            'start_date' => ['date'],
-            'end_date' => ['date', 'after:start_date'],
+            "filter" => ['array'],
+            "filter.date" => ['array'],
+            "filter.date.from" => ['date'],
+            "filter.date.to" => ['date', 'after:start_date'],
+            "filter.type" => ['string'],
         ];
     }
 }
